@@ -9,9 +9,9 @@ events: list[Event] = []
 
 # Predefined list of speakers available for events
 speakers: list[Speaker] = [
-    Speaker(id=1, name="Alice Johnson", topic="Tech Innovation"),
-    Speaker(id=2, name="Bob Smith", topic="Leadership"),
-    Speaker(id=3, name="Carol Davis", topic="Sustainability")
+    Speaker(id=1, name="Emmily Doe", topic="Self Growth"),
+    Speaker(id=2, name="Kindness Jig", topic="Data Extraction"),
+    Speaker(id=3, name="Princess Son", topic="Geology")
 ]
 
 # In-memory list to track all event registrations
