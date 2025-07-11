@@ -2,45 +2,66 @@ from fastapi import APIRouter, HTTPException
 from schemas.user import UserCreate, UserUpdate
 from services.user import user_service
 
-user_router = APIRouter()
+user_router = APIRouter(prefix="/users", tags=["Users"])
+
 
 @user_router.post("/", status_code=201)
 def create_user(user_data: UserCreate):
-  user = user_service.create_user(user_data)
-  return {"message": "User added successfully", "user": user}
+    result = user_service.create_user(user_data)
+    return {
+        "message": "User added successfully",
+        "user": result.get("user") if isinstance(result, dict) else result
+    }
 
 
 @user_router.get("/", status_code=200)
 def get_users():
-  return user_service.get_users()
+    result = user_service.get_users()
+    return {
+        "message": "List of all users",
+        "users": result.get("users") if isinstance(result, dict) else result
+    }
 
 
 @user_router.get("/{user_id}", status_code=200)
 def get_user_by_id(user_id: int):
-  # return user_service.get_user_by_id(user_id)
-  user = user_service.get_user_by_id(user_id)
-  if not user:
-    raise HTTPException(status_code=404, detail="User not found.")
-  return user
+    result = user_service.get_user_by_id(user_id)
+    user = result.get("user") if isinstance(result, dict) else result
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
+    return result
+
 
 @user_router.put("/{user_id}", status_code=200)
 def update_user(user_id: int, user_data: UserUpdate):
-  user = user_service.update_user(user_id, user_data)
-  if not user:
-    raise HTTPException(status_code=404, detail="User not found")
-  return {"message": "User updated successfully", "user": user}
+    result = user_service.update_user(user_id, user_data)
+    user = result.get("user") if isinstance(result, dict) else result
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
+    return {
+        "message": "User updated successfully",
+        "user": user
+    }
 
-@user_router.post("/{user_id}/deactivate")
+
+@user_router.post("/{user_id}/deactivate", status_code=200)
 def deactivate_user(user_id: int):
-  user = user_service.deactivate_user(user_id)
-  if not user:
-    raise HTTPException(status_code=404, detail="User not found")
-  return {"message": "User deactivated successfully", "user": user}
+    result = user_service.deactivate_user(user_id)
+    user = result.get("user") if isinstance(result, dict) else result
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
+    return {
+        "message": "User deactivated successfully",
+        "user": user
+    }
 
 
-@user_router.delete("/{user_id}")
+@user_router.delete("/{user_id}", status_code=200)
 def delete_user(user_id: int):
-  is_deleted = user_service.delete_user(user_id)
-  if not is_deleted:
-    raise HTTPException(status_code=404, detail=f"User with id: {user_id} not found")
-  return {"Message": "User deleted successfully"}
+    result = user_service.delete_user(user_id)
+    deleted = result.get("deleted") if isinstance(result, dict) else result
+    if not deleted:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
+    return {
+        "message": "User deleted successfully"
+    }
